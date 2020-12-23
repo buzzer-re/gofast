@@ -12,9 +12,11 @@ func main() {
 	
 	var url = os.Args[1]
 
-	var res fastHttp.FastResponse = fastHttp.GetResponse(url)
+	var response fastHttp.FastResponse = fastHttp.GetResponse(url)
+	
 
-	fmt.Printf("Starting downloading %s\n", url)
-	fmt.Println(res)
-
+	if response.SupportConcurrent {
+		fmt.Printf("Starting concurrent download of %s\n", url)
+		fmt.Println(response.Header)
+	}
 }
