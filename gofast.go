@@ -15,8 +15,10 @@ func main() {
 	var response fastHttp.FastResponse = fastHttp.GetResponse(url)
 	
 
-	if response.SupportConcurrent {
-		fmt.Printf("Starting concurrent download of %s\n", url)
+	if !response.SupportConcurrent {
+		fmt.Printf("Starting concurrent download of %s\n", response.Filename)
+	} else {
+		fmt.Printf("Remote doens't support multiple connections, downloading %s as normal file\n", response.Filename)
 		fastHttp.NormalDownload(&response)
 	}
 }
