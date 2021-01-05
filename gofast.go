@@ -17,6 +17,6 @@ func main() {
 
 	if response.SupportConcurrent {
 		fmt.Printf("Starting concurrent download of %s\n", url)
-		fmt.Println(response.Header)
+		fastHttp.NormalDownload(&response)
 	}
 }
