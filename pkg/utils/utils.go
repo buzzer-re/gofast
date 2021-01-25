@@ -21,7 +21,6 @@ func ExtractFilename(contentDispositon []string, url string) (string) {
 	if contentDispositon != nil {
 		mark := "filename="
 		if len(contentDispositon) == 1 && strings.Contains(contentDispositon[0], mark) {
-			
 			filenameIndex := strings.Index(contentDispositon[0], mark)
 			if filenameIndex > 0 {
 				return contentDispositon[0][filenameIndex + len(mark):]
