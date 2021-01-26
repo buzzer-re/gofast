@@ -102,7 +102,7 @@ func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
 
 	tasks     := make([]Task, taskNum)
 	splitSize := int64(fResponse.contentLength/int64(taskNum))
-//	remain	  := fResponse.contentLength % int64(taskNum)
+	remain	  := fResponse.contentLength % int64(taskNum)
 
 	start := time.Now()
 	bar := progressbar.DefaultBytes(
@@ -111,7 +111,12 @@ func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
 
 	for i,task := range(tasks) {
 		index := int64(i)
-		task = Task{index*splitSize, (index*splitSize) + splitSize, splitSize}
+		endSum := splitSize
+		if remain != 0 && i == len(tasks) - 1 {
+			endSum = splitSize + remain
+		}
+
+		task = Task{index*splitSize, (index*splitSize) + endSum, splitSize}
 		wg.Add(1)
 		go downloadRange(fResponse, task, &wg, bar)
 	}
