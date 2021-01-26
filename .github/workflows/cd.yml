@@ -1,4 +1,4 @@
-name: gofastcd
+name: gofast-CD
 
 on:
   push:
