@@ -21,7 +21,7 @@ jobs:
         go-version: 1.15
 
     - name: Build
-      run: go build -v ./...
+      run: go build
     
     - name: Prepare package
       run: tar -cf ${{env.TAR_NAME}} ${{env.BIN_NAME}}
