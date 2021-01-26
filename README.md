@@ -67,7 +67,7 @@ Downloaded 2.59375 Gigabyte(s) in 4:32 minute(s). (9969.09 KB/s)
 
 ## Installing
 
-You can go to [releases]() and grab the latest one, or manually build.
+You can go to [releases](https://github.com/AandersonL/gofast/releases) and grab the latest one, or manually build.
 
 > $ git clone https://github.com/aandersonl/gofast && cd gofast && go build
 
