@@ -85,37 +85,45 @@ func NormalDownload(fResponse *FastResponse) {
 	io.Copy(io.MultiWriter(out, bar), fResponse.Res.Body)
 }
 
-func ConcurrentDownload(fResponse *FastResponse) {
+func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
 	out, _ := os.OpenFile(fResponse.Filename, os.O_CREATE|os.O_WRONLY, DEFAULT_PERMISSION)
 
 	syscall.Fallocate(int(out.Fd()), 0, 0, fResponse.contentLength)
 	out.Close()
 
 	var wg sync.WaitGroup
-	fmt.Printf("Total content %d",fResponse.contentLength)
-	taskNum   := int64(runtime.NumCPU())
-	taskNum = taskNum * 2
+	var taskNum int
+	if numTasks != 0 {
+		taskNum = numTasks
+	} else {
+		taskNum = runtime.NumCPU()
+		taskNum = taskNum * 2
+	}
+
 	tasks     := make([]Task, taskNum)
-	splitSize := int64(fResponse.contentLength/taskNum)
-	remain	  := fResponse.contentLength % taskNum
-	fmt.Printf("It will run in %d tasks with size %d and remain %d\n", taskNum, splitSize, remain)
+	splitSize := int64(fResponse.contentLength/int64(taskNum))
+//	remain	  := fResponse.contentLength % int64(taskNum)
 
 	start := time.Now()
+	bar := progressbar.DefaultBytes(
+		fResponse.contentLength,
+		"Downloading")
+
 	for i,task := range(tasks) {
 		index := int64(i)
 		task = Task{index*splitSize, (index*splitSize) + splitSize, splitSize}
 		wg.Add(1)
-		go downloadRange(fResponse, task, &wg)
+		go downloadRange(fResponse, task, &wg, bar)
 	}
 
 	wg.Wait()
 
 	elapsed := time.Since(start)
-	fmt.Printf("Download in %s\n", elapsed)
+	fmt.Printf("Downloaded in %s\n", elapsed)
 }
 
 //downloadRange task downloads a portion of the remote file based in the Range Requests(RFC-7233)
-func downloadRange(fResponse *FastResponse, task Task,  wg *sync.WaitGroup) {
+func downloadRange(fResponse *FastResponse, task Task,  wg *sync.WaitGroup, bar *progressbar.ProgressBar) {
 	defer wg.Done()
 	out, _ := os.OpenFile(fResponse.Filename, os.O_RDWR, DEFAULT_PERMISSION)
 	defer out.Close()
@@ -139,13 +147,7 @@ func downloadRange(fResponse *FastResponse, task Task,  wg *sync.WaitGroup) {
 
 	defer res.Body.Close()
 
-//	bar := progressbar.DefaultBytes(
-//		res.ContentLength,
-//		"Downloading",
-//	)
-	fmt.Println("Dowloading...")
-	//io.Copy(io.MultiWriter(out, bar), res.Body)
-	io.Copy(out, res.Body)
+	io.Copy(io.MultiWriter(out, bar), res.Body)
 }
 
 
