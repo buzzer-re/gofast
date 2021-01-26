@@ -1,4 +1,5 @@
 # GoFast
+![gofast-CI](https://github.com/AandersonL/gofast/workflows/gofast-CI/badge.svg)
 
 A HTTP downloader accelerator for Linux like [axel](https://github.com/axel-download-accelerator/axel), but faster.
 
