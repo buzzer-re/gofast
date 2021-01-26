@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"github.com/akamensky/argparse"	
+	"github.com/akamensky/argparse"
 	"github.com/aandersonl/gofast/pkg/fastHttp"
 )
 
