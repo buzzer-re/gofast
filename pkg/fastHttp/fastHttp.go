@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"syscall"
 	"sync"
 	"github.com/aandersonl/gofast/pkg/utils"
 	"github.com/schollz/progressbar/v3"
@@ -88,7 +87,7 @@ func NormalDownload(fResponse *FastResponse) {
 func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
 	out, _ := os.OpenFile(fResponse.Filename, os.O_CREATE|os.O_WRONLY, DEFAULT_PERMISSION)
 
-	syscall.Fallocate(int(out.Fd()), 0, 0, fResponse.contentLength)
+	out.Seek(fResponse.contentLength, 0)
 	out.Close()
 
 	var wg sync.WaitGroup
