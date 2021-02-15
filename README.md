@@ -2,7 +2,7 @@
 ![gofast-CI](https://github.com/AandersonL/gofast/workflows/gofast-CI/badge.svg)
 ![gofast-CD](https://github.com/AandersonL/gofast/workflows/gofast-CD/badge.svg)
 
-A HTTP downloader accelerator for Linux like [axel](https://github.com/axel-download-accelerator/axel), but faster.
+A HTTP downloader accelerator like [axel](https://github.com/axel-download-accelerator/axel), but faster.
 
 ## What is this ?
 
@@ -68,9 +68,14 @@ Downloaded 2.59375 Gigabyte(s) in 4:32 minute(s). (9969.09 KB/s)
 
 ## Installing
 
-You can go to [releases](https://github.com/AandersonL/gofast/releases) and grab the latest one, or manually build.
+You can go to [releases](https://github.com/AandersonL/gofast/releases) and grab the latest one, or manually build (Tested on Linux and Windows).
 
 > $ git clone https://github.com/aandersonl/gofast && cd gofast && go build
 
+Or
+
+> go get github.com/aandersonl/gofast
+
+Make sure to have GOROOT variable configured to the installation above works.
 
 Any bugs or enhancement feel free to open a issue or pull request!
