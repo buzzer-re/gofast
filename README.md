@@ -1,6 +1,6 @@
 # GoFast
 
-A HTTP downloader accelerator for Linux like [axel](https://github.com/axel-download-accelerator/axel), but faster.
+A HTTP downloader accelerator like [axel](https://github.com/axel-download-accelerator/axel), but faster.
 
 ## What is this ?
 
