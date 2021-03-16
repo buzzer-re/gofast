@@ -8,7 +8,6 @@ import (
 	"strings"
 	"net/http"
 	"os"
-	"runtime"
 	"sync"
 	"github.com/aandersonl/gofast/pkg/utils"
 	"github.com/schollz/progressbar/v3"
@@ -91,17 +90,9 @@ func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
 	out.Close()
 
 	var wg sync.WaitGroup
-	var taskNum int
-	if numTasks != 0 {
-		taskNum = numTasks
-	} else {
-		taskNum = runtime.NumCPU()
-		taskNum = taskNum * 2
-	}
-
-	tasks     := make([]Task, taskNum)
-	splitSize := int64(fResponse.contentLength/int64(taskNum))
-	remain	  := fResponse.contentLength % int64(taskNum)
+	tasks     := make([]Task, numTasks)
+	splitSize := int64(fResponse.contentLength/int64(numTasks))
+	remain	  := fResponse.contentLength % int64(numTasks)
 
 	start := time.Now()
 	bar := progressbar.DefaultBytes(
