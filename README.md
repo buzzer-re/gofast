@@ -18,26 +18,22 @@ gofast is a http-only downloader that uses multiple connections through concurre
 There is a couple of options that you can use:
 
 <pre>
-$ gofast -h                     
-usage: gofast [-h|--help] [-n|--num-tasks <integer>] [-o|--output "<value>"]
-              -u|--url "<value>"
+$ gofast -h                                                                
+A HTTP downloader accelerator using concurrency
 
-              A HTTP downloader accelerator using concurrency
+Usage:
+  gofast [flags]
 
-Arguments:
-
-  -h  --help       Print help information
-  -n  --num-tasks  Number of concurrent connections, default: Num cores * 2.
-                   Default: 0
-  -o  --output     Output filename. Default: 
-  -u  --url        Remote file url
-
+Flags:
+  -h, --help            help for gofast
+  -n, --num-tasks int   Number of tasks to download (default 8)
+  -o, --output string   File output name
 </pre>
 
 Simple usage:
 
 <pre>
-$ gofast -u https://releases.ubuntu.com/20.04.1/ubuntu-20.04.1-desktop-amd64.iso                                                         
+$ gofast https://releases.ubuntu.com/20.04.1/ubuntu-20.04.1-desktop-amd64.iso                                                         
 Starting concurrent download of ubuntu-20.04.1-desktop-amd64.iso
 Downloading 100% |...| (2.6/2.6 GB, 10.634 MB/s)          
 Downloaded in 4m9.761532636s
