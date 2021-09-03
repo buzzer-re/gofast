@@ -1,14 +1,16 @@
 package fastHttp
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
-	"time"
-	"strings"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
+	"time"
+
 	"github.com/aandersonl/gofast/pkg/utils"
 	"github.com/schollz/progressbar/v3"
 )
@@ -28,8 +30,8 @@ const (
 //Task struct that hold where the concurrent download should seek in the file and where must end
 type Task struct {
 	Offset int64
-	End int64
-	Size int64
+	End    int64
+	Size   int64
 }
 
 //FastResponse Based on this enum, we can now how work with the given file
@@ -43,7 +45,9 @@ type FastResponse struct {
 }
 
 //GetResponse makes a Get request to a given url and prepare the FastResponse struct to future downloads
-func GetResponse(url string) FastResponse {
+func GetResponse(url string, ignoreSSL bool) FastResponse {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: ignoreSSL}
+
 	res, err := http.Get(url)
 
 	if err != nil {
@@ -83,30 +87,30 @@ func NormalDownload(fResponse *FastResponse) {
 	io.Copy(io.MultiWriter(out, bar), fResponse.Res.Body)
 }
 
-func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
+func ConcurrentDownload(fResponse *FastResponse, numTasks int) {
 	out, _ := os.OpenFile(fResponse.Filename, os.O_CREATE|os.O_WRONLY, DEFAULT_PERMISSION)
 
 	out.Seek(fResponse.contentLength, 0)
 	out.Close()
 
 	var wg sync.WaitGroup
-	tasks     := make([]Task, numTasks)
-	splitSize := int64(fResponse.contentLength/int64(numTasks))
-	remain	  := fResponse.contentLength % int64(numTasks)
+	tasks := make([]Task, numTasks)
+	splitSize := int64(fResponse.contentLength / int64(numTasks))
+	remain := fResponse.contentLength % int64(numTasks)
 
 	start := time.Now()
 	bar := progressbar.DefaultBytes(
 		fResponse.contentLength,
 		"Downloading")
 
-	for i,task := range(tasks) {
+	for i, task := range tasks {
 		index := int64(i)
 		endSum := splitSize
-		if remain != 0 && i == len(tasks) - 1 {
+		if remain != 0 && i == len(tasks)-1 {
 			endSum = splitSize + remain
 		}
 
-		task = Task{index*splitSize, (index*splitSize) + endSum, splitSize}
+		task = Task{index * splitSize, (index * splitSize) + endSum, splitSize}
 		wg.Add(1)
 		go downloadRange(fResponse, task, &wg, bar)
 	}
@@ -118,7 +122,7 @@ func ConcurrentDownload(fResponse *FastResponse,numTasks int) {
 }
 
 //downloadRange task downloads a portion of the remote file based in the Range Requests(RFC-7233)
-func downloadRange(fResponse *FastResponse, task Task,  wg *sync.WaitGroup, bar *progressbar.ProgressBar) {
+func downloadRange(fResponse *FastResponse, task Task, wg *sync.WaitGroup, bar *progressbar.ProgressBar) {
 	defer wg.Done()
 	out, _ := os.OpenFile(fResponse.Filename, os.O_RDWR, DEFAULT_PERMISSION)
 	defer out.Close()
@@ -136,7 +140,7 @@ func downloadRange(fResponse *FastResponse, task Task,  wg *sync.WaitGroup, bar 
 	if err != nil {
 		panic(err)
 	}
-	if !strings.Contains(res.Status,"206") {
+	if !strings.Contains(res.Status, "206") {
 		panic("Remote doesn't responded with the expected code: 206")
 	}
 
@@ -144,5 +148,3 @@ func downloadRange(fResponse *FastResponse, task Task,  wg *sync.WaitGroup, bar 
 
 	io.Copy(io.MultiWriter(out, bar), res.Body)
 }
-
-
